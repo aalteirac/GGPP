@@ -23,7 +23,7 @@ custom_html = """
     }
 </style>
 """
-# Display the custom HTML
+
 st.components.v1.html(custom_html)
 
 gir = pd.read_excel("./data/GIR_01_25.xlsx")  
@@ -46,6 +46,7 @@ if filters:
 disp1=use.copy()
 
 use['Date'] = pd.to_datetime(use['Date'],format="%d/%m/%Y")
+use['Niveau batterie départ'] = use['Niveau batterie départ']*100
 use["Début"] = pd.to_datetime(use["Date"].astype(str) + " " + use["Début"], format="%Y-%m-%d %H:%M")
 use["Fin"] = pd.to_datetime(use["Date"].astype(str) + " " + use["Fin"], format="%Y-%m-%d %H:%M")
 
@@ -121,7 +122,7 @@ trace2=go.Scatter(x=use['Début'],
 figcombo = make_subplots(rows=3, cols=1, figure=fig, shared_xaxes=True)
 fig.add_trace(trace1, row=2, col=1)
 fig.add_trace(trace2, row=3, col=1)
-fig.update_layout(xaxis1_showticklabels=False, xaxis2_showticklabels=False, xaxis3_showticklabels=True)
+fig.update_layout(xaxis1_showticklabels=False, xaxis2_showticklabels=False, xaxis3_showticklabels=True,yaxis3_range=[0,110])
           
 st.plotly_chart(figcombo, use_container_width=True)
 with st.expander("Raw Data"):
