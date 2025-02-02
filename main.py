@@ -104,7 +104,7 @@ if group:
 
 # CHARTS
 colors = ['#88b947', '#88b947', '#88b947']
-fig = px.timeline(gir, x_start="Start", x_end="Finish", y=ygroup,color_discrete_sequence=colors,height=800)
+fig = px.timeline(gir, x_start="Start", x_end="Finish", y=ygroup,color_discrete_sequence=colors,height=650)
 fig.update_layout(showlegend=False)
 fig.update_yaxes(
     title="",
