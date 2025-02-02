@@ -60,7 +60,6 @@ if filterDate:
     if len(res) != 2:
         st.stop()
 
-
 use['Date'] = pd.to_datetime(use['Date'],format="%d/%m/%Y")
 
 # FILTER BY DATE RANGE
