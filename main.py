@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from datetime import datetime
+import datetime
 from datetime import timedelta
 import plotly.express as px
 from plotly.subplots import make_subplots
@@ -8,6 +8,22 @@ import plotly.graph_objects as go
 import streamlit.components.v1 as components
 
 st.set_page_config(layout="wide")
+
+def getPicker():
+    today = datetime.datetime.now()
+    next_year = today.year 
+    ttoday= datetime.date(next_year, 1, 1)
+    jan_1 = datetime.date(next_year-2, 1, 1)
+    dec_31 = datetime.date(next_year, 12, 31)
+
+    d = st.date_input(
+        "Filter by Date Range",
+        (ttoday, datetime.date(next_year, 1, 7)),
+        jan_1,
+        dec_31,
+        format="MM.DD.YYYY",
+    )
+    return d
 custom_html = """<div class="banner">
     <img src="https://static.wixstatic.com/media/87260b_3ae09b2243664894b60911bf6f830397~mv2.png/v1/fill/w_418,h_150,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/Logo_enedis_header.png" alt="Banner Image">
     </div>
@@ -34,30 +50,43 @@ immatriculation_options = use['IMMATRICULATION'].unique()
 
 st.title('Booking, Distance and Battery Level Over Time')
 
-col1,col2=st.columns([1,5])
+col1,col2,col3=st.columns([1,1,2])
 filters = col1.toggle("Filter by Car", value=False)
-group = col2.toggle("Group Booking", value=False)
+filterDate = col2.toggle("Filter by Date Range", value=False)
+group = col3.toggle("Group Booking", value=False)
+
+if filterDate:
+    res=getPicker()
+    if len(res) is not 2:
+        st.stop()
+
+
+use['Date'] = pd.to_datetime(use['Date'],format="%d/%m/%Y")
+
+# FILTER BY DATE RANGE
+if filterDate:
+    startt,endd=res
+    startt=pd.to_datetime(startt)
+    endd=pd.to_datetime(endd)
+    use=use[use["Date"].isin(pd.date_range(startt, endd))]
+    # for whatever reason the IsIn doesn;t work, sounds like a format issue (reset index?)..
+    s=pd.to_datetime(gir['Date départ'])
+    gir=gir[(s>pd.to_datetime(startt))&(s<pd.to_datetime(endd))]
 
 if filters:
-    # colsel1,colsel2=st.columns(2)
-    # with colsel2:
-    #     st.write('<div style="height: 27px;"> </div>', unsafe_allow_html=True)
-    #     selall=st.button('ALL')
-    # if selall:    
-    #     multisel=colsel1.multiselect('Select Immatriculations:',immatriculation_options,default=immatriculation_options)
-    # else:
     multisel=st.multiselect('Select Immatriculations:',immatriculation_options,default=immatriculation_options[0])    
 
 
-# CLEAN AND ADD MISSING DAYS FOR USAGE
+# APPLY IMMAT FILTERS
 if filters:
     use=use[use["IMMATRICULATION"].isin(multisel)]
     gir = gir[gir["IMMATRICULATION"].isin(multisel)]
 
+# KEEP INTACT FOR RAW DISPLAY -- DEBUG
 disp1=use.copy()
 disp2=gir.copy()
 
-use['Date'] = pd.to_datetime(use['Date'],format="%d/%m/%Y")
+# CLEAN AND ADD MISSING DAYS FOR USAGE
 use['Niveau batterie départ'] = use['Niveau batterie départ']*100
 use["Début"] = pd.to_datetime(use["Date"].astype(str) + " " + use["Début"], format="%Y-%m-%d %H:%M")
 use["Fin"] = pd.to_datetime(use["Date"].astype(str) + " " + use["Fin"], format="%Y-%m-%d %H:%M")
@@ -68,11 +97,9 @@ if filters and len(multisel)==0:
 
 use=use.drop(columns=['IMMATRICULATION'])
 use=use.resample('D',on='Date').mean()
-# use=use.fillna(0)
 use=use.reset_index()
 
 # BUILD BOOKING DF
-
 gir['Task']=gir['IMMATRICULATION']
 gir['Start']=gir['Date départ']
 gir['Start Day'] = gir['Date départ'].dt.dayofweek
@@ -135,6 +162,7 @@ with st.expander("Raw Data"):
     st.write("Booking:")
     st.dataframe(disp2,use_container_width=True,hide_index=True)
 
+# UI TWEAKS
 def setUI():
     hvar='''
         <script>
