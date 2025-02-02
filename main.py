@@ -68,8 +68,8 @@ gir['Start']=gir['Date départ']
 gir['Finish']=gir['Date retour']
 
 # CHARTS
-colors = ['#7a0504', (0.2, 0.7, 0.3), 'rgb(210, 60, 180)']
-fig = px.timeline(gir, x_start="Start", x_end="Finish", y="dumm")
+colors = ['#88b947', '#88b947', '#88b947']
+fig = px.timeline(gir, x_start="Start", x_end="Finish", y="dumm",color_discrete_sequence=colors)
 fig.update_layout(showlegend=False)
 # fig.update_layout(yaxis_visible=False)
 # fig.update_layout(
@@ -116,7 +116,7 @@ trace1=go.Scatter(x=use['Début'],
 )
 trace2=go.Scatter(x=use['Début'], 
     y = use['Niveau batterie départ'], 
-    line_color = 'orange',
+    line_color = '#88b947',
     mode = 'lines+markers',
     showlegend = False)
 figcombo = make_subplots(rows=3, cols=1, figure=fig, shared_xaxes=True)
