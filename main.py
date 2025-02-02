@@ -57,7 +57,7 @@ group = col3.toggle("Group Booking", value=False)
 
 if filterDate:
     res=getPicker()
-    if len(res) is not 2:
+    if len(res) != 2:
         st.stop()
 
 
