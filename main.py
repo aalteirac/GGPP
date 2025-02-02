@@ -133,6 +133,7 @@ if group:
 colors = ['#88b947', '#88b947', '#88b947']
 fig = px.timeline(gir, x_start="Start", x_end="Finish", y=ygroup,color_discrete_sequence=colors,height=650)
 fig.update_layout(showlegend=False)
+fig.update_layout(yaxis={'dtick':1})
 fig.update_yaxes(
     title="",
     tickson="boundaries",
@@ -150,7 +151,7 @@ trace2=go.Scatter(x=use['Début'],
     line_color = '#88b947',
     mode = 'lines+markers',
     showlegend = False)
-figcombo = make_subplots(rows=3, cols=1, figure=fig, shared_xaxes=True)
+figcombo = make_subplots(rows=3, cols=1, figure=fig, shared_xaxes=True,row_heights = [0.5, 0.3, 0.3])
 fig.add_trace(trace1, row=2, col=1)
 fig.add_trace(trace2, row=3, col=1)
 fig.update_layout(xaxis1_showticklabels=False, xaxis2_showticklabels=False, xaxis3_showticklabels=True,yaxis3_range=[0,110],yaxis2_title_text='Distance(KM)',yaxis3_title_text='Battery(%)')
